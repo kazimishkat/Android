@@ -5,25 +5,54 @@ import android.content.Context;
 
 import com.example.pharmacymanagement.api.ApiClient;
 import com.example.pharmacymanagement.api.ApiService;
+import com.example.pharmacymanagement.model.request.ChangePasswordRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
+import com.example.pharmacymanagement.session.SessionManager;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
 public class CustomerRepository {
     private final ApiService apiService;
+    private final SessionManager sessionManager;
+
+    /* =================================================================
+     * CONSTRUCTOR & INITIALIZATION
+     * ================================================================= */
 
     public CustomerRepository(Context context) {
-        apiService = ApiClient.getClient(context);
+        this.apiService = ApiClient.getClient(context);
+        this.sessionManager = new SessionManager(context);
     }
 
-    public void getCustomerByUserId(Long userId,
-                                    Callback<CustomerResponse> callback) {
 
-        Call<CustomerResponse> call =
-                apiService.getCustomerByUserId(userId);
+    /* =================================================================
+     * LOCAL SESSION DATA ACCESS
+     * ================================================================= */
 
+    public CustomerResponse getLocalCustomer() {
+        return sessionManager.getCustomer();
+    }
+
+
+    /* =================================================================
+     * REMOTE CUSTOMER PROFILE MANAGEMENT METHODS
+     * ================================================================= */
+
+    public void getCustomerByUserId(Long userId, Callback<CustomerResponse> callback) {
+        Call<CustomerResponse> call = apiService.getCustomerByUserId(userId);
         call.enqueue(callback);
-
     }
-}
+
+    public void updateCustomerProfile(Long customerId, CustomerResponse customerRequest, Callback<CustomerResponse> callback) {
+        Call<CustomerResponse> call = apiService.updateCustomerProfile(customerId, customerRequest);
+        call.enqueue(callback);
+    }
+
+    public void changePassword(ChangePasswordRequest passwordRequest, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = apiService.changePassword(passwordRequest);
+        call.enqueue(callback);
+    }
+    }
+

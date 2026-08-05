@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CircleImage">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Soft Modern Rounded Card (Reference Style) -->
+    <style name="SoftModernCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">22dp</item>
+        <item name="cardElevation">3dp</item>
+        <item name="cardBackgroundColor">@color/colorCardSurface</item>
+        <item name="strokeColor">@color/colorCardBorder</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="DashboardSectionHeader">
+        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+</resources>

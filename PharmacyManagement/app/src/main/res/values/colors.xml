@@ -7,4 +7,43 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Background Light Cyan-Tinted Canvas -->
+    <color name="colorDashboardBg">#EBF7F8</color>
+
+    <!-- White Card Surface -->
+    <color name="colorCardSurface">#FFFFFF</color>
+    <color name="colorCardBorder">#D2ECEE</color>
+
+    <!-- Text Typography Colors -->
+    <color name="colorTextPrimary">#1E293B</color>
+    <color name="colorTextSecondary">#64748B</color>
+    <color name="colorTextAccent">#00A896</color>
+
+    <!-- Status Palette (Matching 3 Cylinder/Card Colors from Reference UI) -->
+    <color name="colorRunningTeal">#00B4D8</color>      <!-- Cyan/Teal Cylinder -->
+    <color name="colorRunningTealBg">#E0F7FA</color>    <!-- Light Cyan Badge Bg -->
+
+    <color name="colorPausedYellow">#FFB703</color>     <!-- Yellow/Amber Cylinder -->
+    <color name="colorPausedYellowBg">#FFF8E1</color>  <!-- Light Yellow Badge Bg -->
+
+    <color name="colorCompletedRed">#EF233C</color>     <!-- Crimson Red Cylinder -->
+    <color name="colorCompletedRedBg">#FFEBEE</color>   <!-- Light Red Badge Bg -->
+
+    <!-- Dedicated Dashboard Hierarchy Colors -->
+    <!-- NEWLY ADDED -->
+    <color name="colorCustomerBadgeBg">#E8EAF6</color>
+    <color name="colorCustomerBadgeText">#3F51B5</color>
+    <!-- NEWLY ADDED -->
+    <color name="colorDeliveredBg">#E6F4EA</color>
+    <color name="colorDeliveredText">#137333</color>
+    <!-- NEWLY ADDED -->
+    <color name="colorRunningBg">#E8F0FE</color>
+    <color name="colorRunningText">#1A73E8</color>
+    <!-- NEWLY ADDED -->
+    <color name="colorViewAllLink">#00897B</color>
+    <!-- NEWLY ADDED -->
+    <color name="colorQuickActionMedicines">#0D9488</color>
+    <color name="colorQuickActionCart">#EA580C</color>
+    <!-- NEWLY ADDED -->
+    <color name="colorQuickActionTrack">#2563EB</color>
 </resources>

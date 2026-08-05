@@ -18,6 +18,7 @@ public class ApiClient {
 
     // Real Device
     // private static final String BASE_URL = "http://192.168.88.250:8085/";
+    public static final String IMAGE_URL = BASE_URL + "uploads";
 
     private static Retrofit retrofit;
 
@@ -38,7 +39,23 @@ public class ApiClient {
                     .addInterceptor(logging)
                     .build();
 
+            // NEWLY ADDED
             Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(java.time.LocalDateTime.class, new com.google.gson.JsonDeserializer<java.time.LocalDateTime>() {
+                        @Override
+                        public java.time.LocalDateTime deserialize(com.google.gson.JsonElement json, java.lang.reflect.Type typeOfT, com.google.gson.JsonDeserializationContext context) throws com.google.gson.JsonParseException {
+                            String s = json.getAsString();
+                            try {
+                                return java.time.LocalDateTime.parse(s, java.time.format.DateTimeFormatter.ISO_DATE_TIME);
+                            } catch (Exception e) {
+                                try {
+                                    return java.time.ZonedDateTime.parse(s).toLocalDateTime();
+                                } catch (Exception e2) {
+                                    return java.time.OffsetDateTime.parse(s).toLocalDateTime();
+                                }
+                            }
+                        }
+                    })
                     .setLenient()
                     .create();
 

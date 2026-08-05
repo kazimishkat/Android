@@ -1,6 +1,7 @@
 package com.example.pharmacymanagement.model.response;
 
 import com.example.pharmacymanagement.enums.OnlineOrderStatus;
+import com.google.gson.annotations.SerializedName; // NEWLY ADDED
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,15 +10,20 @@ import lombok.Data;
 
 @Data
 public class OnlineOrderResponse {
+    @SerializedName("id") // NEWLY ADDED
     private Long id;
+    @SerializedName("orderNumber") // NEWLY ADDED
     private String orderNumber;
     private Long customerId;
     private String customerName;
     private Long branchId;
     private String branchName;
     private Long prescriptionId;
+    @SerializedName(value = "status", alternate = {"orderStatus"}) // NEWLY ADDED
     private OnlineOrderStatus status;
+    @SerializedName("orderDate") // NEWLY ADDED
     private LocalDateTime orderDate;
+    @SerializedName("totalAmount") // NEWLY ADDED
     private Double totalAmount;
     private String paymentStatus;
     private String paymentTransactionId;

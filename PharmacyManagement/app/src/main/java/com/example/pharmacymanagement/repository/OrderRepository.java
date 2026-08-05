@@ -17,25 +17,51 @@ import retrofit2.Callback;
 public class OrderRepository {
     private final ApiService apiService;
 
+    /* =================================================================
+     * CONSTRUCTOR & INITIALIZATION
+     * ================================================================= */
+
     public OrderRepository(Context context) {
-        apiService = ApiClient.getClient(context);
+        this.apiService = ApiClient.getClient(context);
     }
 
-    // ১. অনলাইন অর্ডার প্লেস করার জন্য
-    public void placeOrder(OnlineOrderRequest orderRequest, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = apiService.placeOrder(orderRequest);
+
+    /* =================================================================
+     * ORDER CREATION & MANAGEMENT METHODS
+     * ================================================================= */
+
+    public void placeOrder(OnlineOrderRequest orderRequest, Long customerId, String transactionId, Callback<OnlineOrderResponse> callback) {
+        Call<OnlineOrderResponse> call = apiService.placeOrder(orderRequest, customerId, transactionId);
         call.enqueue(callback);
     }
 
-    // ২. কাস্টমারের সকল অর্ডার হিস্ট্রি ও ট্র্যাকিং স্ট্যাটাস পাওয়ার জন্য
+    public void cancelOrder(Long orderId, Callback<OnlineOrderResponse> callback) {
+        Call<OnlineOrderResponse> call = apiService.cancelOrder(orderId);
+        call.enqueue(callback);
+    }
+
+
+    /* =================================================================
+     * ORDER FETCHING & TRACKING METHODS
+     * ================================================================= */
+
     public void getOrdersByCustomerId(Long customerId, Callback<List<OnlineOrderResponse>> callback) {
-        Call<List<OnlineOrderResponse>> call = apiService.getOrdersByCustomerId(customerId);
+        Call<List<OnlineOrderResponse>> call = apiService.getCustomerOrderHistory(customerId);
         call.enqueue(callback);
     }
 
-    // ৩. একক কোন অর্ডারের বিস্তারিত দেখার জন্য
+    public void getMyOrders(Callback<List<OnlineOrderResponse>> callback) {
+        Call<List<OnlineOrderResponse>> call = apiService.getMyOrders();
+        call.enqueue(callback);
+    }
+
     public void getOrderDetails(Long orderId, Callback<OnlineOrderResponse> callback) {
-        Call<OnlineOrderResponse> call = apiService.getOrderDetails(orderId);
+        Call<OnlineOrderResponse> call = apiService.getOrderById(orderId);
+        call.enqueue(callback);
+    }
+
+    public void trackOrder(String orderNumber, Callback<OnlineOrderResponse> callback) {
+        Call<OnlineOrderResponse> call = apiService.trackOrderByNumber(orderNumber);
         call.enqueue(callback);
     }
 

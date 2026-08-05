@@ -1,5 +1,6 @@
 package com.example.pharmacymanagement.api;
 
+import com.example.pharmacymanagement.model.request.ChangePasswordRequest;
 import com.example.pharmacymanagement.model.request.LoginRequest;
 import com.example.pharmacymanagement.model.request.OnlineOrderRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
@@ -13,46 +14,72 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
-    // --- Authentication & User Endpoints ---
+    /* =================================================================
+     * 1. AUTHENTICATION & CUSTOMER PROFILE ENDPOINTS
+     * ================================================================= */
+
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
-    @GET("api/customer/user/{id}")
-    Call<CustomerResponse> getCustomerByUserId(@Path("id") Long id);
+    @GET("api/customers/user/{userId}")
+    Call<CustomerResponse> getCustomerByUserId(@Path("userId") Long userId);
 
-    // --- Medicine Endpoints ---
+    @PUT("api/customers/{id}")
+    Call<CustomerResponse> updateCustomerProfile(@Path("id") Long id, @Body CustomerResponse customer);
 
-    // ১. সকল মেডিসিনের তালিকা পাওয়ার জন্য
+    @POST("api/auth/change-password")
+    Call<ResponseBody> changePassword(@Body ChangePasswordRequest request);
+
+
+    /* =================================================================
+     * 2. MEDICINE DIRECTORY & SEARCH ENDPOINTS
+     * ================================================================= */
+
     @GET("api/medicines")
     Call<List<MedicineResponse>> getAllMedicines();
 
-    // ২. নির্দিষ্ট আইডি দিয়ে একটি মেডিসিনের ডিটেইলস পাওয়ার জন্য (ঐচ্ছিক)
     @GET("api/medicines/{id}")
-    Call<MedicineResponse> getMedicineById(@Path("id") Long medicineId);
+    Call<MedicineResponse> getMedicineById(@Path("id") Long id);
 
-    // ৩. নাম দিয়ে ওষুধ সার্চ করার জন্য (Search Bar-এর কাজ করার জন্য)
     @GET("api/medicines/search")
-    Call<List<MedicineResponse>> searchMedicines(@Query("query") String query);
+    Call<List<MedicineResponse>> searchMedicinesByBrandName(@Query("brandName") String brandName);
 
 
-    // --- Order & Tracking Endpoints ---
+    /* =================================================================
+     * 3. ONLINE ORDER & TRACKING ENDPOINTS
+     * ================================================================= */
 
-    // ৪. নতুন অর্ডার প্লেস করার জন্য
-    @POST("api/orders/place")
-    Call<ResponseBody> placeOrder(@Body OnlineOrderRequest request);
+    @POST("api/online-orders/place")
+    Call<OnlineOrderResponse> placeOrder(
+            @Body OnlineOrderRequest request,
+            @Query("customerId") Long customerId,
+            @Query("transactionId") String transactionId
+    );
 
-    // ৫. নির্দিষ্ট কাস্টমারের সব অর্ডার লিস্ট/হিস্ট্রি পাওয়ার জন্য (Order Tracking)
-    @GET("api/orders/customer/{customerId}")
-    Call<List<OnlineOrderResponse>> getOrdersByCustomerId(@Path("customerId") Long customerId);
+    @GET("api/online-orders/customer/{customerId}/history")
+    Call<List<OnlineOrderResponse>> getCustomerOrderHistory(@Path("customerId") Long customerId);
 
-    // ৬. নির্দিষ্ট একটি অর্ডারের রিয়েলটাইম স্ট্যাটাস/ডিটেইলস জানার জন্য (ঐচ্ছিক)
-    @GET("api/orders/{orderId}")
-    Call<OnlineOrderResponse> getOrderDetails(@Path("orderId") Long orderId);
+    @GET("api/online-orders/my-orders")
+    Call<List<OnlineOrderResponse>> getMyOrders();
+
+    @GET("api/online-orders/track/{orderNumber}")
+    Call<OnlineOrderResponse> trackOrderByNumber(@Path("orderNumber") String orderNumber);
+
+    @GET("api/online-orders/{id}")
+    Call<OnlineOrderResponse> getOrderById(@Path("id") Long id);
+
+    @GET("api/online-orders")
+    Call<List<OnlineOrderResponse>> getAllOrders();
+
+    @PATCH("api/online-orders/{orderId}/cancel")
+    Call<OnlineOrderResponse> cancelOrder(@Path("orderId") Long orderId);
 
 
 }
