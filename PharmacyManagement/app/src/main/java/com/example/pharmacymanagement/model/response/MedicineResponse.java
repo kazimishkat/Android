@@ -29,4 +29,9 @@ public class MedicineResponse {
     private BigDecimal defaultSellingPrice;
     private Boolean isActive;
     private String image;
+
+    // NEWLY ADDED
+    public String getBrandName() {
+        return brandName;
+    }
 }

@@ -6,6 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/colorDashboardBg">
 
     <!-- Top AppBar -->
@@ -13,14 +14,18 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:background="@android:color/transparent"
         android:elevation="0dp">
 
+        <!-- NEWLY ADDED -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent">
+            android:background="@android:color/transparent"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,13 +33,18 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- NEWLY ADDED -->
                 <ImageButton
                     android:id="@+id/btnBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:contentDescription="Back"
-                    android:padding="8dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_back"
                     app:tint="@color/colorTextPrimary" />
 
@@ -82,9 +92,11 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Medicine Recycler List & Empty State -->
+        <!-- NEWLY ADDED -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="12dp">
 
             <androidx.recyclerview.widget.RecyclerView

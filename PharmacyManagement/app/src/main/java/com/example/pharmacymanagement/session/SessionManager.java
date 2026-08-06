@@ -3,9 +3,15 @@ package com.example.pharmacymanagement.session;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.pharmacymanagement.model.request.OnlineOrderItemRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
 import com.example.pharmacymanagement.model.response.LoginResponse;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SessionManager {
 
@@ -14,6 +20,9 @@ public class SessionManager {
     private static final String TOKEN = "token";
     private static final String USER = "user";
     private static final String CUSTOMER = "customer";
+
+    // 🟢 Cart Key Added
+    private static final String CART_ITEMS = "cart_items";
 
     private SharedPreferences preferences;
 
@@ -98,5 +107,27 @@ public class SessionManager {
 
         preferences.edit().clear().apply();
 
+    }
+
+    /* =================================================================
+     * CART MANAGEMENT (NEWLY ADDED SECTION)
+     * ================================================================= */
+
+    public void saveCartItems(List<OnlineOrderItemRequest> items) {
+        String json = gson.toJson(items);
+        preferences.edit().putString(CART_ITEMS, json).apply();
+    }
+
+    public List<OnlineOrderItemRequest> getCartItems() {
+        String json = preferences.getString(CART_ITEMS, null);
+        if (json == null) {
+            return new ArrayList<>();
+        }
+        Type type = new TypeToken<List<OnlineOrderItemRequest>>() {}.getType();
+        return gson.fromJson(json, type);
+    }
+
+    public void clearCart() {
+        preferences.edit().remove(CART_ITEMS).apply();
     }
 }
