@@ -9,11 +9,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,6 +58,12 @@ public class MedicineList extends AppCompatActivity {
         // ApiClient initialization with context
         apiService = ApiClient.getClient(this);
 
+        // 🟢 GenericActivity
+        String searchGeneric = getIntent().getStringExtra("SEARCH_GENERIC");
+        if (searchGeneric != null && !searchGeneric.trim().isEmpty()) {
+            etSearchMedicine.setText(searchGeneric.trim());
+        }
+
         fetchMedicineCatalog();
     }
 
@@ -79,16 +81,14 @@ public class MedicineList extends AppCompatActivity {
         masterMedicineList = new ArrayList<>();
         filteredMedicineList = new ArrayList<>();
 
-        // NEWLY ADDED
         medicineAdapter = new MedicineAdapter(this, filteredMedicineList, new MedicineAdapter.OnMedicineClickListener() {
             @Override
             public void onMedicineClick(MedicineResponse medicine) {
-                // NEWLY ADDED
+                // Item Click Listener
             }
 
             @Override
             public void onAddToCartClick(MedicineResponse medicine) {
-                // NEWLY ADDED
                 Toast.makeText(MedicineList.this, medicine.getBrandName() + " added to cart", Toast.LENGTH_SHORT).show();
             }
         });
@@ -101,7 +101,6 @@ public class MedicineList extends AppCompatActivity {
      * EVENT LISTENERS & REAL-TIME SEARCH
      * ================================================================= */
     private void setupListeners() {
-        // NEWLY ADDED
         btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         // EditText Search Listener
@@ -130,7 +129,7 @@ public class MedicineList extends AppCompatActivity {
                     masterMedicineList.clear();
                     masterMedicineList.addAll(response.body());
 
-                    // টেক্সট ফিল্ডের বর্তমান ভ্যালু দিয়ে ফিল্টার কল
+                    // টেক্সট ফিল্ডের বর্তমান ভ্যালু দিয়ে অটোমেটিক ফিল্টার করা
                     filterMedicines(etSearchMedicine.getText().toString().trim());
                 } else {
                     showEmptyState();

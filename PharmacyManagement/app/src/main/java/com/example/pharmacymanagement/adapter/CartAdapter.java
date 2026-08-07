@@ -1,11 +1,11 @@
 package com.example.pharmacymanagement.adapter;
 
-import android.text.Editable; // NEWLY ADDED
-import android.text.TextWatcher; // NEWLY ADDED
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText; // NEWLY ADDED
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,6 +19,7 @@ import java.util.List;
 import lombok.NonNull;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
+
     public interface OnCartItemChangeListener {
         void onQuantityChanged(int position, int newQuantity);
         void onItemRemoved(int position);
@@ -26,10 +27,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     private final List<OnlineOrderItemRequest> cartItems;
     private final OnCartItemChangeListener listener;
-
-    /* =================================================================
-     * CONSTRUCTOR
-     * ================================================================= */
 
     public CartAdapter(List<OnlineOrderItemRequest> cartItems, OnCartItemChangeListener listener) {
         this.cartItems = cartItems;
@@ -48,15 +45,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
         OnlineOrderItemRequest item = cartItems.get(position);
 
-        holder.txtMedicineName.setText(item.getMedicineBrandName() != null ? item.getMedicineBrandName() : "Medicine");
+        // NEWLY ADDED
+        holder.txtMedicineName.setText(item.getMedicineBrandName() != null ? item.getMedicineBrandName() : "");
 
-        // Remove previous watcher to avoid recursion
+        // TextWatcher সেশন ক্লিয়ার করা
         if (holder.etQuantity.getTag() instanceof TextWatcher) {
             holder.etQuantity.removeTextChangedListener((TextWatcher) holder.etQuantity.getTag());
         }
 
         holder.etQuantity.setText(String.valueOf(item.getQuantity()));
 
+        // 🟢 ২. টেক্সট চেঞ্জ লিসেনার (ম্যানুয়ালি ইনপুট দিলে)
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -72,11 +71,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                         int qty = Integer.parseInt(val);
                         if (qty >= 1 && qty != item.getQuantity()) {
                             item.setQuantity(qty);
+                            updateLineTotal(holder, item);
                             if (listener != null) listener.onQuantityChanged(holder.getBindingAdapterPosition(), qty);
-                            
-                            double unitPrice = item.getPricePerUnit() != null ? item.getPricePerUnit() : 0.0;
-                            double lineTotal = unitPrice * qty;
-                            holder.txtPrice.setText(String.format("৳ %.2f", lineTotal));
                         }
                     } catch (NumberFormatException ignored) {}
                 }
@@ -85,43 +81,54 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.etQuantity.addTextChangedListener(watcher);
         holder.etQuantity.setTag(watcher);
 
-        double unitPrice = item.getPricePerUnit() != null ? item.getPricePerUnit() : 0.0;
-        double lineTotal = unitPrice * item.getQuantity();
-        holder.txtPrice.setText(String.format("৳ %.2f", lineTotal));
+        // প্রাইস সেটআপ
+        updateLineTotal(holder, item);
 
-        // Increase Quantity Button
+        // 🟢 ৩. Increase Quantity Button (+ ক্লিক করলে)
         holder.btnIncrease.setOnClickListener(v -> {
             int currentQty = item.getQuantity();
             int newQty = currentQty + 1;
             item.setQuantity(newQty);
             holder.etQuantity.setText(String.valueOf(newQty));
+            updateLineTotal(holder, item);
+
+            // টোটাল পেয়াবল আপডেট ট্রিগার
+            if (listener != null) listener.onQuantityChanged(holder.getBindingAdapterPosition(), newQty);
         });
 
-        // Decrease Quantity Button
+        // 🟢 ৪. Decrease Quantity Button (- ক্লিক করলে)
         holder.btnDecrease.setOnClickListener(v -> {
             int currentQty = item.getQuantity();
             if (currentQty > 1) {
                 int newQty = currentQty - 1;
                 item.setQuantity(newQty);
                 holder.etQuantity.setText(String.valueOf(newQty));
+                updateLineTotal(holder, item);
+
+                // টোটাল পেয়াবল আপডেট ট্রিগার
+                if (listener != null) listener.onQuantityChanged(holder.getBindingAdapterPosition(), newQty);
             }
         });
 
-        // Remove Item Button
+        // 🟢 ৫. Remove Item Button
         holder.btnRemove.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
-            if (listener != null) listener.onItemRemoved(pos);
+            if (pos != RecyclerView.NO_POSITION && listener != null) {
+                listener.onItemRemoved(pos);
+            }
         });
+    }
+
+    private void updateLineTotal(CartViewHolder holder, OnlineOrderItemRequest item) {
+        double unitPrice = item.getPricePerUnit() != null ? item.getPricePerUnit() : 0.0;
+        double lineTotal = unitPrice * item.getQuantity();
+        holder.txtPrice.setText(String.format("৳ %.2f", lineTotal));
     }
 
     @Override
     public int getItemCount() {
         return cartItems != null ? cartItems.size() : 0;
     }
-
-    /* =================================================================
-     * VIEWHOLDER CLASS
-     * ================================================================= */
 
     static class CartViewHolder extends RecyclerView.ViewHolder {
         TextView txtMedicineName;

@@ -19,6 +19,9 @@ public class OnlineOrderRequest {
 
     private String deliveryAddress;
 
+    // NEWLY ADDED
+    private String paymentMethod;
+
 
     private List<OnlineOrderItemRequest> items;
 }

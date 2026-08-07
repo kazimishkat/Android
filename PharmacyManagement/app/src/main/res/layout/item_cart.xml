@@ -48,13 +48,14 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- NEWLY ADDED -->
             <ImageButton
                 android:id="@+id/btnDecreaseQty"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Decrease Quantity"
-                android:src="@android:drawable/ic_media_previous"
+                android:src="@drawable/ic_minus"
                 app:tint="@color/colorTextSecondary" />
 
             <!-- NEWLY ADDED -->
@@ -75,13 +76,14 @@
                 android:imeOptions="actionDone"
                 android:selectAllOnFocus="true" />
 
+            <!-- NEWLY ADDED -->
             <ImageButton
                 android:id="@+id/btnIncreaseQty"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Increase Quantity"
-                android:src="@android:drawable/ic_input_add"
+                android:src="@drawable/ic_plus"
                 app:tint="@color/colorRunningTeal" />
 
             <ImageButton

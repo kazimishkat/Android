@@ -12,39 +12,33 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
-
         android:orientation="vertical"
         android:background="@drawable/bg_card"
-
         android:layout_margin="20dp"
         android:padding="20dp"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="180dp"
             android:layout_height="60dp"
             android:src="@drawable/logo"/>
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to SwiftX"
+            android:text="Welcome to MPharmacy"
             android:textStyle="bold"
             android:textSize="28sp"
             android:textColor="#222"
-            android:layout_marginTop="0dp"
-            />
+            android:layout_marginTop="0dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,16 +56,12 @@
             app:boxCornerRadiusTopStart="5dp"
             android:hint="Email">
 
-
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/email"
-                />
-
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -86,15 +76,14 @@
             app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-                />
         </com.google.android.material.textfield.TextInputLayout>
 
-
         <TextView
+            android:id="@+id/txtForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Forgot Password?"
@@ -113,14 +102,17 @@
             android:backgroundTint="#003C36"
             app:cornerRadius="25dp"/>
 
-
-
+        <!-- 🟢 Register ID & Clickable options added -->
         <TextView
+            android:id="@+id/txtRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Don't have an account? Register"
             android:textColor="#555"
-            android:layout_marginTop="25dp"/>
+            android:layout_marginTop="25dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -131,6 +123,5 @@
             android:layout_gravity="center"/>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

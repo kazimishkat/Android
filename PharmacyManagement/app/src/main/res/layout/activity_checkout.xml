@@ -6,19 +6,26 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/colorDashboardBg">
 
+    <!-- Top AppBar -->
+    <!-- NEWLY ADDED -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp">
+        android:fitsSystemWindows="true"
+        android:background="@color/colorCardSurface"
+        android:elevation="4dp"
+        app:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent">
+            android:background="@android:color/transparent"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -30,9 +37,13 @@
                     android:id="@+id/btnBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:contentDescription="Back"
-                    android:padding="8dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_back"
                     app:tint="@color/colorTextPrimary" />
 
@@ -40,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="Order Checkout"
+                    android:text="Checkout Process"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -59,11 +70,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- SECTION 1: DELIVERY & BRANCH DETAILS -->
             <TextView
                 style="@style/DashboardSectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SHIPPING &amp; DELIVERY DETAILS" />
+                android:text="DELIVERY &amp; PAYMENT DETAILS" />
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/SoftModernCard"
@@ -77,11 +89,31 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- Branch Selector Dropdown -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select Near Branch"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusTopStart="12dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinnerBranch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Delivery Address -->
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Full Delivery Address"
+                        android:layout_marginTop="12dp"
+                        android:hint="Enter full shipping address..."
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
@@ -95,51 +127,58 @@
                             android:minLines="2" />
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Payment Method Dropdown -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:hint="Contact Phone Number"
+                        android:hint="Payment Method"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etPhoneNumber"
+                        <AutoCompleteTextView
+                            android:id="@+id/spinnerPaymentMethod"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="phone" />
+                            android:inputType="none"
+                            android:text="Cash on Delivery" />
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Mobile Banking Transaction ID -->
+                    <!-- NEWLY ADDED -->
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutTransactionId"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:hint="Order Note (Optional)"
+                        android:hint="Mobile Banking Transaction ID"
+                        android:visibility="gone"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etNote"
+                            android:id="@+id/etTransactionId"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Order Summary -->
+            <!-- SECTION 2: CART ITEMS SUMMARY (Like Web Web UI Right Panel) -->
             <TextView
                 style="@style/DashboardSectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="PAYMENT SUMMARY" />
+                android:text="CART ITEMS SUMMARY" />
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/SoftModernCard"
@@ -153,37 +192,80 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/txtSummaryTotal"
-                        android:layout_width="wrap_content"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerCheckoutSummary"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorRunningTeal"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        tools:text="Total Payable: ৳ 0.00" />
+                        android:nestedScrollingEnabled="false"
+                        tools:listitem="@layout/item_checkout_cart" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Payment Method: Cash on Delivery (COD)"
-                        android:textColor="@color/colorTextSecondary"
-                        android:textSize="13sp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="#E0E0E0" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Grand Total:"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtGrandTotal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:textColor="@color/colorRunningTeal"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="৳ 32.20" />
+                    </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnConfirmOrder"
+            <!-- Action Buttons (Submit / Cancel) -->
+            <!-- NEWLY ADDED -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:backgroundTint="@color/colorRunningTeal"
-                android:text="Confirm &amp; Place Order"
-                android:textAllCaps="false"
-                android:textColor="@color/colorCardSurface"
-                android:textSize="16sp"
-                app:cornerRadius="27dp" />
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSubmitOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:backgroundTint="@color/colorRunningTeal"
+                    android:text="Submit Order"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorCardSurface"
+                    android:textSize="15sp"
+                    app:cornerRadius="25dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancel"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Cancel"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorRunningTeal"
+                    android:textSize="15sp"
+                    app:cornerRadius="25dp"
+                    app:strokeColor="@color/colorRunningTeal" />
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

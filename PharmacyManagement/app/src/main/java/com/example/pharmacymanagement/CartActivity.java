@@ -118,10 +118,38 @@ public class CartActivity extends AppCompatActivity {
 
         if (savedItems != null && !savedItems.isEmpty()) {
             cartItemList.addAll(savedItems);
+            // NEWLY ADDED - Dynamically resolve any missing brand names on startup
+            for (OnlineOrderItemRequest item : cartItemList) {
+                if (item.getMedicineBrandName() == null || item.getMedicineBrandName().trim().isEmpty()) {
+                    resolveMedicineName(item, () -> {
+                        cartAdapter.notifyDataSetChanged();
+                        sessionManager.saveCartItems(cartItemList);
+                    });
+                }
+            }
         }
 
         cartAdapter.notifyDataSetChanged();
         updateTotalPriceUI();
+    }
+
+    // NEWLY ADDED
+    private void resolveMedicineName(OnlineOrderItemRequest item, Runnable callback) {
+        if (item.getMedicineId() == null) return;
+        apiService.getMedicineById(item.getMedicineId()).enqueue(new Callback<com.example.pharmacymanagement.model.response.MedicineResponse>() {
+            @Override
+            public void onResponse(Call<com.example.pharmacymanagement.model.response.MedicineResponse> call, Response<com.example.pharmacymanagement.model.response.MedicineResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    item.setMedicineBrandName(response.body().getBrandName());
+                }
+                if (callback != null) callback.run();
+            }
+
+            @Override
+            public void onFailure(Call<com.example.pharmacymanagement.model.response.MedicineResponse> call, Throwable t) {
+                if (callback != null) callback.run();
+            }
+        });
     }
 
     private void saveAndUpdateTotal() {
@@ -129,15 +157,19 @@ public class CartActivity extends AppCompatActivity {
         updateTotalPriceUI();
     }
 
-    private void updateTotalPriceUI() {
+    // NEWLY ADDED
+    private void calculateTotalPayable() {
         double total = 0.0;
         for (OnlineOrderItemRequest item : cartItemList) {
             double price = item.getPricePerUnit() != null ? item.getPricePerUnit() : 0.0;
             int qty = item.getQuantity();
             total += (price * qty);
         }
-
         txtCartTotal.setText(String.format("৳ %.2f", total));
+    }
+
+    private void updateTotalPriceUI() {
+        calculateTotalPayable(); // NEWLY ADDED
 
         if (cartItemList.isEmpty()) {
             recyclerCart.setVisibility(View.GONE);
@@ -151,54 +183,35 @@ public class CartActivity extends AppCompatActivity {
     }
 
     /* =================================================================
-     * CHECKOUT API PROCESS
+     * CHECKOUT NAVIGATION (REDIRECT TO CHECKOUT ACTIVITY)
      * ================================================================= */
     private void handleCheckout() {
-        if (cartItemList.isEmpty()) {
+        // ১. কার্ট যদি খালি থাকে তবে মেসেজ দিয়ে আটকে দেবে
+        if (cartItemList == null || cartItemList.isEmpty()) {
             Toast.makeText(this, "Your cart is empty!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Customer Info বের করা
-        CustomerResponse customer = sessionManager.getCustomer();
-        Long customerId = (customer != null && customer.getId() != null) ? customer.getId() : 1L;
-
-        // ক্যাশ অন ডেলিভারির জন্য ডিফল্ট Transaction ID
-        String transactionId = "COD_" + System.currentTimeMillis();
-
-        btnProceedCheckout.setEnabled(false);
-        btnProceedCheckout.setText("Processing...");
-
-        OnlineOrderRequest orderRequest = new OnlineOrderRequest();
-        orderRequest.setItems(cartItemList);
-
-        // 🟢 ApiService-এর ৩টি প্যারামিটার অনুযায়ী কল করা হলো
-        apiService.placeOrder(orderRequest, customerId, transactionId).enqueue(new Callback<OnlineOrderResponse>() {
-            @Override
-            public void onResponse(Call<OnlineOrderResponse> call, Response<OnlineOrderResponse> response) {
-                btnProceedCheckout.setEnabled(true);
-                btnProceedCheckout.setText("Proceed Checkout");
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(CartActivity.this, "Order placed successfully!", Toast.LENGTH_LONG).show();
-
-                    // SessionManager দিয়ে কার্ট ক্লিয়ার
-                    sessionManager.clearCart();
-
-                    Intent intent = new Intent(CartActivity.this, OrderHistory.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(CartActivity.this, "Failed to place order. Try again!", Toast.LENGTH_SHORT).show();
-                }
+        // NEWLY ADDED - Validate cart item properties to avoid NullPointerExceptions during checkout serialization
+        List<OnlineOrderItemRequest> validItems = new ArrayList<>();
+        for (OnlineOrderItemRequest item : cartItemList) {
+            if (item.getMedicineId() != null 
+                    && item.getQuantity() != null && item.getQuantity() > 0 
+                    && item.getPricePerUnit() != null) {
+                validItems.add(item);
             }
+        }
 
-            @Override
-            public void onFailure(Call<OnlineOrderResponse> call, Throwable t) {
-                btnProceedCheckout.setEnabled(true);
-                btnProceedCheckout.setText("Proceed Checkout");
-                Toast.makeText(CartActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (validItems.isEmpty()) {
+            Toast.makeText(this, "Cart contains invalid items. Please refresh and try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Save cleaned list to session manager
+        sessionManager.saveCartItems(validItems);
+
+        // ২. সরাসরি CheckoutActivity-তে নিয়ে যাবে (অর্ডার সাবমিটের কাজ CheckoutActivity করবে)
+        Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
+        startActivity(intent);
     }
 }

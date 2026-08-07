@@ -7,13 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pharmacymanagement.model.request.LoginRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
@@ -28,16 +26,14 @@ import retrofit2.Response;
 
 public class login extends AppCompatActivity {
 
-
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private ProgressBar progressBar;
+    private TextView txtRegister, txtForgotPassword;
 
     private AuthRepository authRepository;
     private CustomerRepository customerRepository;
     private SessionManager sessionManager;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,28 +41,38 @@ public class login extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-
         init();
 
         btnLogin.setOnClickListener(v -> login());
 
+        // 🟢 Register text-এ ক্লিক করলে SignupActivity-তে যাবে
+        txtRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(login.this, SignupActivity.class);
+            startActivity(intent);
+        });
+
+        // 🟢 Forgot Password-এ ক্লিক করলে ForgotPasswordActivity-তে যাবে
+        txtForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(login.this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void init() {
-
         etEmail = findViewById(R.id.email);
         etPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.btnLogin);
         progressBar = findViewById(R.id.progressBar);
 
+        txtRegister = findViewById(R.id.txtRegister);
+        txtForgotPassword = findViewById(R.id.txtForgotPassword);
+
         authRepository = new AuthRepository(this);
         customerRepository = new CustomerRepository(this);
         sessionManager = new SessionManager(this);
-
     }
 
     private void login() {
-
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
@@ -84,21 +90,16 @@ public class login extends AppCompatActivity {
         btnLogin.setEnabled(false);
 
         LoginRequest request = new LoginRequest();
-
         request.setUsernameOrEmail(email);
         request.setPassword(password);
 
         authRepository.login(request, new Callback<LoginResponse>() {
-
             @Override
-            public void onResponse(Call<LoginResponse> call,
-                                   Response<LoginResponse> response) {
-
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 progressBar.setVisibility(View.GONE);
                 btnLogin.setEnabled(true);
 
                 if (!response.isSuccessful()) {
-
                     Toast.makeText(login.this,
                             "Invalid Email or Password",
                             Toast.LENGTH_SHORT).show();
@@ -106,8 +107,6 @@ public class login extends AppCompatActivity {
                 }
 
                 LoginResponse login = response.body();
-
-                System.out.println(login);
 
                 if (login == null) {
                     Toast.makeText(login.this,
@@ -124,61 +123,39 @@ public class login extends AppCompatActivity {
 
                 // Load Customer
                 loadCustomer(login.getUserId());
-
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call,
-                                  Throwable t) {
-
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 btnLogin.setEnabled(true);
 
                 Toast.makeText(login.this,
                         t.getMessage(),
                         Toast.LENGTH_LONG).show();
-
             }
         });
-
     }
 
     private void loadCustomer(Long userId) {
+        customerRepository.getCustomerByUserId(userId, new Callback<CustomerResponse>() {
+            @Override
+            public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    sessionManager.saveCustomer(response.body());
+                }
 
-        customerRepository.getCustomerByUserId(userId,
-                new Callback<CustomerResponse>() {
+                Intent intent = new Intent(login.this, CustomerDashboardActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
 
-                    @Override
-                    public void onResponse(Call<CustomerResponse> call,
-                                           Response<CustomerResponse> response) {
-
-                        if (response.isSuccessful()
-                                && response.body() != null) {
-
-                            sessionManager.saveCustomer(response.body());
-
-                        }
-
-                        Intent intent = new Intent(login.this, CustomerDashboardActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-
-
-                        finish();
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<CustomerResponse> call,
-                                          Throwable t) {
-
-                        startActivity(new Intent(login.this,
-                                MainActivity.class));
-
-                        finish();
-
-                    }
-                });
-
+            @Override
+            public void onFailure(Call<CustomerResponse> call, Throwable t) {
+                startActivity(new Intent(login.this, MainActivity.class));
+                finish();
+            }
+        });
     }
-    }
+}

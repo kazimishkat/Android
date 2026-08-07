@@ -6,15 +6,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
     android:background="@color/colorDashboardBg">
 
     <!-- Top Floating Header Bar -->
+    <!-- NEWLY ADDED -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp">
+        android:fitsSystemWindows="true"
+        android:background="@color/colorCardSurface"
+        android:elevation="4dp"
+        app:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -68,9 +72,11 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Main Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="70dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -136,8 +142,6 @@
                             tools:text="user@mpharm.com" />
                     </LinearLayout>
 
-                    <!-- Pill Label -->
-                    <!-- NEWLY ADDED -->
                     <TextView
                         android:id="@+id/txtUserRole"
                         android:layout_width="wrap_content"
@@ -155,14 +159,14 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Status Stat Cards (Similar to the 3 Cylinder Cards in Reference Image) -->
+            <!-- Status Stat Cards -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
-                <!-- In Transit Card (Cyan/Teal) -->
+                <!-- In Transit Card -->
                 <com.google.android.material.card.MaterialCardView
                     style="@style/SoftModernCard"
                     android:layout_width="0dp"
@@ -202,7 +206,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Pending Card (Yellow) -->
+                <!-- Pending Card -->
                 <com.google.android.material.card.MaterialCardView
                     style="@style/SoftModernCard"
                     android:layout_width="0dp"
@@ -243,7 +247,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Delivered Card (Crimson Red) -->
+                <!-- Delivered Card -->
                 <com.google.android.material.card.MaterialCardView
                     style="@style/SoftModernCard"
                     android:layout_width="0dp"
@@ -316,7 +320,6 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- NEWLY ADDED -->
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
@@ -352,7 +355,6 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- NEWLY ADDED -->
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
@@ -387,7 +389,6 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- NEWLY ADDED -->
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
@@ -421,7 +422,6 @@
                     android:layout_weight="1"
                     android:text="RECENT ORDERS" />
 
-                <!-- NEWLY ADDED -->
                 <TextView
                     android:id="@+id/txtViewAll"
                     android:layout_width="wrap_content"
@@ -482,5 +482,110 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- 🟢 3-ITEM BOTTOM FOOTER MENU -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+
+        android:layout_gravity="bottom"
+
+        android:fitsSystemWindows="false"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/colorCardSurface"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- 1. Generics -->
+            <LinearLayout
+                android:id="@+id/navGenerics"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    app:tint="@color/purple_500" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Generics"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- 2. Checkout -->
+            <LinearLayout
+                android:id="@+id/navCheckout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_view"
+                    app:tint="@color/teal_700" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Checkout"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 3. Profile -->
+            <LinearLayout
+                android:id="@+id/navProfile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    app:tint="@color/colorQuickActionTrack" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Profile"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

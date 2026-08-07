@@ -9,12 +9,15 @@
     android:fitsSystemWindows="true"
     android:background="@color/colorDashboardBg">
 
+    <!-- NEWLY ADDED -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp">
+        android:fitsSystemWindows="true"
+        android:background="@color/colorCardSurface"
+        android:elevation="4dp"
+        app:elevation="4dp">
 
         <!-- NEWLY ADDED -->
         <androidx.appcompat.widget.Toolbar

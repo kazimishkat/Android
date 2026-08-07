@@ -1,35 +1,27 @@
 package com.example.pharmacymanagement;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-import android.util.Log; // NEWLY ADDED
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.example.pharmacymanagement.adapter.OrderAdapter;
 import com.example.pharmacymanagement.api.ApiClient;
 import com.example.pharmacymanagement.api.ApiService;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
-import com.example.pharmacymanagement.model.response.LoginResponse; // NEWLY ADDED
+import com.example.pharmacymanagement.model.response.LoginResponse;
 import com.example.pharmacymanagement.model.response.OnlineOrderResponse;
-import com.example.pharmacymanagement.enums.OnlineOrderStatus; // NEWLY ADDED
-import com.example.pharmacymanagement.repository.CustomerRepository;
-import com.example.pharmacymanagement.repository.OrderRepository;
 import com.example.pharmacymanagement.session.SessionManager;
 import com.google.android.material.card.MaterialCardView;
 
@@ -41,6 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CustomerDashboardActivity extends AppCompatActivity {
+
     /* =================================================================
      * UI VIEW DECLARATIONS
      * ================================================================= */
@@ -55,13 +48,15 @@ public class CustomerDashboardActivity extends AppCompatActivity {
     private RecyclerView recyclerOrders;
     private LinearLayout layoutEmptyState;
 
+    private LinearLayout navGenerics, navCheckout, navProfile;
+
     /* =================================================================
      * ADAPTER, DATA & SERVICES
      * ================================================================= */
     private OrderAdapter orderAdapter;
     private List<OnlineOrderResponse> recentOrderList;
     private ApiService apiService;
-    private SessionManager sessionManager; // NEWLY ADDED
+    private SessionManager sessionManager;
 
     /* =================================================================
      * ACTIVITY LIFECYCLE
@@ -71,12 +66,16 @@ public class CustomerDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_dashboard);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+        }
+
         initViews();
         setupRecyclerView();
         setupClickListeners();
 
         apiService = ApiClient.getClient(this);
-        sessionManager = new SessionManager(this); // NEWLY ADDED
+        sessionManager = new SessionManager(this);
 
         loadUserProfile();
     }
@@ -107,6 +106,11 @@ public class CustomerDashboardActivity extends AppCompatActivity {
         txtViewAll = findViewById(R.id.txtViewAll);
         recyclerOrders = findViewById(R.id.recyclerOrders);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
+
+        // 🟢 3 Footer Views Init
+        navGenerics = findViewById(R.id.navGenerics);
+        navCheckout = findViewById(R.id.navCheckout);
+        navProfile = findViewById(R.id.navProfile);
     }
 
     private void setupRecyclerView() {
@@ -137,13 +141,22 @@ public class CustomerDashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(CustomerDashboardActivity.this, OrderHistory.class)));
 
         btnLogout.setOnClickListener(v -> performLogout());
+
+        // 🟢 3 FOOTER MENU NAVIGATION LISTENERS
+        navGenerics.setOnClickListener(v ->
+                startActivity(new Intent(CustomerDashboardActivity.this, GenericActivity.class)));
+
+        navCheckout.setOnClickListener(v ->
+                startActivity(new Intent(CustomerDashboardActivity.this, CheckoutActivity.class)));
+
+        navProfile.setOnClickListener(v ->
+                startActivity(new Intent(CustomerDashboardActivity.this, ProfileActivity.class)));
     }
 
     /* =================================================================
      * USER DATA & LOCAL SESSION
      * ================================================================= */
     private void loadUserProfile() {
-        // NEWLY ADDED
         CustomerResponse customer = sessionManager.getCustomer();
         LoginResponse user = sessionManager.getUser();
 
@@ -166,65 +179,63 @@ public class CustomerDashboardActivity extends AppCompatActivity {
      * API CALLS & STATS LOGIC
      * ================================================================= */
     private void fetchOrdersAndCalculateStats() {
-        // NEWLY ADDED
         CustomerResponse customer = sessionManager.getCustomer();
         LoginResponse user = sessionManager.getUser();
 
-        Log.d("DashboardDebug", "Token: " + sessionManager.getToken()); // NEWLY ADDED
+        Log.d("DashboardDebug", "Token: " + sessionManager.getToken());
 
         if (customer != null && customer.getId() != null) {
-            Log.d("DashboardDebug", "Customer ID found in session: " + customer.getId()); // NEWLY ADDED
+            Log.d("DashboardDebug", "Customer ID found in session: " + customer.getId());
             fetchOrderHistoryForCustomer(customer.getId());
         } else if (user != null && user.getUserId() != null) {
-            Log.d("DashboardDebug", "Customer ID not in session. Fetching customer profile for User ID: " + user.getUserId()); // NEWLY ADDED
+            Log.d("DashboardDebug", "Customer ID not in session. Fetching customer profile for User ID: " + user.getUserId());
             apiService.getCustomerByUserId(user.getUserId()).enqueue(new Callback<CustomerResponse>() {
                 @Override
                 public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         CustomerResponse fetchedCustomer = response.body();
-                        sessionManager.saveCustomer(fetchedCustomer); // NEWLY ADDED
-                        Log.d("DashboardDebug", "Fetched Customer ID: " + fetchedCustomer.getId()); // NEWLY ADDED
+                        sessionManager.saveCustomer(fetchedCustomer);
+                        Log.d("DashboardDebug", "Fetched Customer ID: " + fetchedCustomer.getId());
                         if (fetchedCustomer.getId() != null) {
                             fetchOrderHistoryForCustomer(fetchedCustomer.getId());
                         } else {
-                            Log.e("DashboardDebug", "Fetched Customer ID is null"); // NEWLY ADDED
+                            Log.e("DashboardDebug", "Fetched Customer ID is null");
                             resetStatsAndShowEmpty();
                         }
                     } else {
-                        Log.e("DashboardDebug", "Failed to fetch customer profile. Response Code: " + response.code()); // NEWLY ADDED
+                        Log.e("DashboardDebug", "Failed to fetch customer profile. Response Code: " + response.code());
                         resetStatsAndShowEmpty();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CustomerResponse> call, Throwable t) {
-                    Log.e("DashboardDebug", "Error fetching customer profile: " + t.getMessage(), t); // NEWLY ADDED
+                    Log.e("DashboardDebug", "Error fetching customer profile: " + t.getMessage(), t);
                     resetStatsAndShowEmpty();
                 }
             });
         } else {
-            Log.e("DashboardDebug", "No customer or user details found in session"); // NEWLY ADDED
+            Log.e("DashboardDebug", "No customer or user details found in session");
             resetStatsAndShowEmpty();
         }
     }
 
     private void fetchOrderHistoryForCustomer(Long customerId) {
-        // NEWLY ADDED
         apiService.getCustomerOrderHistory(customerId).enqueue(new Callback<List<OnlineOrderResponse>>() {
             @Override
             public void onResponse(Call<List<OnlineOrderResponse>> call, Response<List<OnlineOrderResponse>> response) {
-                Log.d("DashboardDebug", "Order History Response Code: " + response.code()); // NEWLY ADDED
+                Log.d("DashboardDebug", "Order History Response Code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     List<OnlineOrderResponse> allOrders = response.body();
-                    Log.d("DashboardDebug", "Fetched orders count: " + allOrders.size()); // NEWLY ADDED
+                    Log.d("DashboardDebug", "Fetched orders count: " + allOrders.size());
                     calculateAndShowStats(allOrders);
                     updateRecentOrdersList(allOrders);
                 } else {
                     try {
                         String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
-                        Log.e("DashboardDebug", "Failed to fetch orders. Error body: " + errorBody); // NEWLY ADDED
+                        Log.e("DashboardDebug", "Failed to fetch orders. Error body: " + errorBody);
                     } catch (Exception e) {
-                        Log.e("DashboardDebug", "Failed to read error body", e); // NEWLY ADDED
+                        Log.e("DashboardDebug", "Failed to read error body", e);
                     }
                     resetStatsAndShowEmpty();
                 }
@@ -232,7 +243,7 @@ public class CustomerDashboardActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<OnlineOrderResponse>> call, Throwable t) {
-                Log.e("DashboardDebug", "Order history network failure: " + t.getMessage(), t); // NEWLY ADDED
+                Log.e("DashboardDebug", "Order history network failure: " + t.getMessage(), t);
                 resetStatsAndShowEmpty();
             }
         });
@@ -245,7 +256,6 @@ public class CustomerDashboardActivity extends AppCompatActivity {
 
         for (OnlineOrderResponse order : allOrders) {
             if (order.getStatus() != null) {
-                // NEWLY ADDED
                 switch (order.getStatus()) {
                     case PENDING_VERIFICATION:
                         countPending++;
@@ -306,7 +316,6 @@ public class CustomerDashboardActivity extends AppCompatActivity {
      * LOGOUT MANAGEMENT
      * ================================================================= */
     private void performLogout() {
-        // NEWLY ADDED
         sessionManager.logout();
 
         Toast.makeText(this, "Logged out successfully!", Toast.LENGTH_SHORT).show();

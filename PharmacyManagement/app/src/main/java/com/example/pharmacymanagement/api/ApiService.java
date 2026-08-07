@@ -1,9 +1,12 @@
 package com.example.pharmacymanagement.api;
 
 import com.example.pharmacymanagement.model.request.ChangePasswordRequest;
+import com.example.pharmacymanagement.model.request.CustomerRequest;
+import com.example.pharmacymanagement.model.request.ForgotPasswordRequest;
 import com.example.pharmacymanagement.model.request.LoginRequest;
 import com.example.pharmacymanagement.model.request.OnlineOrderRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
+import com.example.pharmacymanagement.model.response.GenericMedicineResponse;
 import com.example.pharmacymanagement.model.response.LoginResponse;
 import com.example.pharmacymanagement.model.response.MedicineResponse;
 import com.example.pharmacymanagement.model.response.OnlineOrderResponse;
@@ -24,7 +27,8 @@ public interface ApiService {
     /* =================================================================
      * 1. AUTHENTICATION & CUSTOMER PROFILE ENDPOINTS
      * ================================================================= */
-
+    @POST("api/auth/register-customer")
+    Call<CustomerResponse> registerCustomer(@Body CustomerRequest request);
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
@@ -36,6 +40,9 @@ public interface ApiService {
 
     @POST("api/auth/change-password")
     Call<ResponseBody> changePassword(@Body ChangePasswordRequest request);
+
+    @POST("api/auth/forgot-password")
+    Call<ResponseBody> forgotPassword(@Body ForgotPasswordRequest request);
 
 
     /* =================================================================
@@ -80,6 +87,24 @@ public interface ApiService {
 
     @PATCH("api/online-orders/{orderId}/cancel")
     Call<OnlineOrderResponse> cancelOrder(@Path("orderId") Long orderId);
+
+    /* =================================================================
+     * 4. BRANCH & INVENTORY ENDPOINTS
+     * ================================================================= */
+
+    // NEWLY ADDED
+    @GET("api/branches")
+    Call<List<com.example.pharmacymanagement.model.response.BranchResponse>> getAllBranches();
+
+    // NEWLY ADDED
+    @GET("api/branch-inventories/branch/{branchId}")
+    Call<List<com.example.pharmacymanagement.model.response.BranchInventoryResponse>> getInventoryByBranch(@Path("branchId") Long branchId);
+
+    /* =================================================================
+     * 5. GENERIC ENDPOINTS
+     * ================================================================= */
+    @GET("/api/generic-medicines") // আপনার ব্যাকএন্ডের আসল জেনরিক API Endpoint Path
+    Call<List<GenericMedicineResponse>> getAllGenericMedicines();
 
 
 }

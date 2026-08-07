@@ -8,10 +8,14 @@ public class OnlineOrderItemRequest {
     private Long medicineId; // 👈 কাস্টমার সরাসরি মেডিসিন সিলেক্ট করবে
 
 
-    private transient String medicineBrandName;
+    // NEWLY ADDED
+    private String medicineBrandName;
 
     private Integer quantity;
 
 
     private Double pricePerUnit;
+
+    // NEWLY ADDED
+    private transient boolean inStock = true;
 }
