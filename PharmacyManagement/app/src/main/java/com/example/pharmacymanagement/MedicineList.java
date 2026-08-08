@@ -1,5 +1,6 @@
 package com.example.pharmacymanagement;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +18,7 @@ import com.example.pharmacymanagement.adapter.MedicineAdapter;
 import com.example.pharmacymanagement.api.ApiClient;
 import com.example.pharmacymanagement.api.ApiService;
 import com.example.pharmacymanagement.model.response.MedicineResponse;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class MedicineList extends AppCompatActivity {
      * UI VIEW DECLARATIONS
      * ================================================================= */
     private ImageButton btnBack;
+    private MaterialButton btnGoToCart;
     private EditText etSearchMedicine;
     private RecyclerView recyclerMedicines;
     private LinearLayout layoutEmptyState;
@@ -72,6 +75,7 @@ public class MedicineList extends AppCompatActivity {
      * ================================================================= */
     private void initViews() {
         btnBack = findViewById(R.id.btnBack);
+        btnGoToCart = findViewById(R.id.btnGoToCart);
         etSearchMedicine = findViewById(R.id.etSearchMedicine);
         recyclerMedicines = findViewById(R.id.recyclerMedicines);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
@@ -102,6 +106,10 @@ public class MedicineList extends AppCompatActivity {
      * ================================================================= */
     private void setupListeners() {
         btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        btnGoToCart.setOnClickListener(v -> {
+            Intent intent = new Intent(MedicineList.this, CartActivity.class);
+            startActivity(intent);
+        });
 
         // EditText Search Listener
         etSearchMedicine.addTextChangedListener(new TextWatcher() {

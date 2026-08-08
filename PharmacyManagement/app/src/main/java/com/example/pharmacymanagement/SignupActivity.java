@@ -1,6 +1,5 @@
 package com.example.pharmacymanagement;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,10 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.pharmacymanagement.api.ApiClient;
 import com.example.pharmacymanagement.api.ApiService;
 import com.example.pharmacymanagement.model.request.CustomerRequest;
-import com.example.pharmacymanagement.model.response.CustomerResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,31 +96,40 @@ public class SignupActivity extends AppCompatActivity {
         btnRegister.setEnabled(false);
         btnRegister.setText("Creating Account...");
 
-        // 🟢 CustomerRequest DTO তৈরি ও মান সেটিং
+        // 🟢 ১. CustomerRequest DTO তৈরি
         CustomerRequest request = new CustomerRequest();
         request.setName(name);
         request.setPhone(phone);
         request.setEmail(email);
         request.setUsername(username);
         request.setPassword(password);
-        request.setCreateAccount(true); // 🟢 অ্যাকাউন্ট তৈরির জন্য true করা হলো
+        request.setCreateAccount(true);
 
-        apiService.registerCustomer(request).enqueue(new Callback<CustomerResponse>() {
+        // 🟢 ২. CustomerRequest-কে JSON RequestBody তে রূপান্তর ("customer" Part-এর জন্য)
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(request);
+        RequestBody customerJsonPart = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                jsonString
+        );
+
+        // 🟢 ৩. Multipart API Call (ইমেজ দেওয়া আবশ্যক নয় তাই ২য় প্যারামিটারে null পাস করা হয়েছে)
+        apiService.registerCustomer(customerJsonPart, null).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 btnRegister.setEnabled(true);
                 btnRegister.setText("SIGN UP");
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(SignupActivity.this, "Registration Successful! Please Login.", Toast.LENGTH_LONG).show();
-                    finish(); // লগইন পেজে ফিরে যাবে
+                    Toast.makeText(SignupActivity.this, "Registration Successful! Please check your email.", Toast.LENGTH_LONG).show();
+                    finish(); // সফল হলে ব্যাক করে লগইন স্ক্রিনে চলে যাবে
                 } else {
-                    Toast.makeText(SignupActivity.this, "Registration Failed! Email or Username might exist.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Registration Failed! Username/Phone/Email might already exist.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<CustomerResponse> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 btnRegister.setEnabled(true);
                 btnRegister.setText("SIGN UP");
                 Toast.makeText(SignupActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();

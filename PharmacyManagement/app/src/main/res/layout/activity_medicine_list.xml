@@ -29,36 +29,59 @@
             app:contentInsetStart="0dp"
             app:contentInsetLeft="0dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:paddingEnd="16dp">
 
-                <!-- NEWLY ADDED -->
-                <ImageButton
-                    android:id="@+id/btnBack"
+                <!-- বামপাশের ব্যাক বাটন ও টাইটেল -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="Back"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_back"
-                    app:tint="@color/colorTextPrimary" />
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Back"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_back"
+                        app:tint="@color/colorTextPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Medicine Catalog"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 🟢 ডানপাশের "Go to Cart" বাটন -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGoToCart"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Medicine Catalog"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="20sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="My Cart"
+                    android:textColor="#FFFFFFFF"
+                    app:backgroundTint="#EA580C"
+                    app:cornerRadius="24dp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
-            </LinearLayout>
+            </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 

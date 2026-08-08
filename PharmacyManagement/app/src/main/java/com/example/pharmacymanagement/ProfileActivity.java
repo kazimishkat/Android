@@ -12,11 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.pharmacymanagement.api.ApiClient;
 import com.example.pharmacymanagement.api.ApiService;
 import com.example.pharmacymanagement.model.request.ChangePasswordRequest;
+import com.example.pharmacymanagement.model.request.CustomerRequest;
 import com.example.pharmacymanagement.model.response.CustomerResponse;
 import com.example.pharmacymanagement.session.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -168,6 +172,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         String updatedName = etProfileName.getText().toString().trim();
         String updatedPhone = etProfilePhone.getText().toString().trim();
+        String email = currentCustomer.getEmail();
 
         if (updatedName.isEmpty()) {
             etProfileName.setError("Name is required!");
@@ -175,13 +180,31 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
+        if (updatedPhone.isEmpty()) {
+            etProfilePhone.setError("Phone is required!");
+            etProfilePhone.requestFocus();
+            return;
+        }
+
         btnSaveProfile.setEnabled(false);
         btnSaveProfile.setText("Saving...");
 
-        currentCustomer.setName(updatedName);
-        currentCustomer.setPhone(updatedPhone);
+        // 🟢 1. CustomerRequest DTO তৈরি (ব্যাকএন্ড যা এক্সপেক্ট করে)
+        CustomerRequest updateRequest = new CustomerRequest();
+        updateRequest.setName(updatedName);
+        updateRequest.setPhone(updatedPhone);
+        updateRequest.setEmail(email);
 
-        apiService.updateCustomerProfile(currentCustomer.getId(), currentCustomer).enqueue(new Callback<CustomerResponse>() {
+        // 🟢 2. CustomerRequest-কে JSON RequestBody-তে রূপান্তর ("customer" Part-এর জন্য)
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(updateRequest);
+        RequestBody customerJsonPart = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                jsonString
+        );
+
+        // 🟢 3. Multipart API Call (ইমেজ দেওয়া আবশ্যক নয় তাই image = null)
+        apiService.updateCustomerProfile(currentCustomer.getId(), customerJsonPart, null).enqueue(new Callback<CustomerResponse>() {
             @Override
             public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
                 btnSaveProfile.setEnabled(true);

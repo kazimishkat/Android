@@ -13,13 +13,17 @@ import com.example.pharmacymanagement.model.response.OnlineOrderResponse;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -27,18 +31,27 @@ public interface ApiService {
     /* =================================================================
      * 1. AUTHENTICATION & CUSTOMER PROFILE ENDPOINTS
      * ================================================================= */
+    @Multipart
     @POST("api/auth/register-customer")
-    Call<CustomerResponse> registerCustomer(@Body CustomerRequest request);
+    Call<ResponseBody> registerCustomer(
+            @Part("customer") RequestBody customerJson,
+            @Part MultipartBody.Part image
+    );
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @GET("api/customers/user/{userId}")
     Call<CustomerResponse> getCustomerByUserId(@Path("userId") Long userId);
 
+    @Multipart
     @PUT("api/customers/{id}")
-    Call<CustomerResponse> updateCustomerProfile(@Path("id") Long id, @Body CustomerResponse customer);
+    Call<CustomerResponse> updateCustomerProfile(
+            @Path("id") Long id,
+            @Part("customer") RequestBody customerJson,
+            @Part MultipartBody.Part image
+    );
 
-    @POST("api/auth/change-password")
+    @POST("api/auth/reset-password")
     Call<ResponseBody> changePassword(@Body ChangePasswordRequest request);
 
     @POST("api/auth/forgot-password")

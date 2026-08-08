@@ -75,11 +75,12 @@ public class CheckoutActivity extends AppCompatActivity {
         apiService = ApiClient.getClient(this);
 
         initViews();
-        setupDropdowns();
         setupRecyclerView();
+        loadCheckoutSummary();
+        setupDropdowns();
         setupListeners();
 
-        loadCheckoutSummary();
+
     }
 
     /* =================================================================

@@ -45,8 +45,8 @@ public class CustomerRepository {
         call.enqueue(callback);
     }
 
-    public void updateCustomerProfile(Long customerId, CustomerResponse customerRequest, Callback<CustomerResponse> callback) {
-        Call<CustomerResponse> call = apiService.updateCustomerProfile(customerId, customerRequest);
+    public void updateCustomerProfile(Long customerId, okhttp3.RequestBody customerJson, okhttp3.MultipartBody.Part image, retrofit2.Callback<CustomerResponse> callback) {
+        retrofit2.Call<CustomerResponse> call = apiService.updateCustomerProfile(customerId, customerJson, image);
         call.enqueue(callback);
     }
 
